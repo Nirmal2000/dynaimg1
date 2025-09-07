@@ -7,44 +7,7 @@ export default function SimpleChatInput() {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { addTool } = useToolContext();
-
-  // Extract code blocks from message content
-  const extractCodeBlocks = useCallback((content) => {
-    const codeBlockRegex = /```(?:html|javascript|js|css)?\n?([\s\S]*?)```/g;
-    const blocks = [];
-    let match;
-    
-    while ((match = codeBlockRegex.exec(content)) !== null) {
-      blocks.push({
-        code: match[1].trim(),
-        fullMatch: match[0]
-      });
-    }
-    
-    return blocks;
-  }, []);
-
-  // Find largest code block by character count
-  const findLargestCodeBlock = useCallback((codeBlocks) => {
-    if (codeBlocks.length === 0) return null;
-    
-    return codeBlocks.reduce((largest, current) => 
-      current.code.length > largest.code.length ? current : largest
-    );
-  }, []);
-
-  // Auto-render the largest code block
-  const autoRenderLargestBlock = useCallback((content) => {
-    const codeBlocks = extractCodeBlocks(content);
-    const largestBlock = findLargestCodeBlock(codeBlocks);
-    
-    if (largestBlock) {
-      const toolId = `auto-${Date.now()}`;
-      // Use React context instead of global events
-      addTool(largestBlock.code, toolId);
-    }
-  }, [addTool, extractCodeBlocks, findLargestCodeBlock]);
+  const { addToolByType } = useToolContext();
 
   // Handle chat message submission
   const handleSendMessage = useCallback(async () => {
@@ -58,7 +21,8 @@ export default function SimpleChatInput() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/generate-tool', {
+      // For demo: call local intent picker to choose a prebuilt tool.
+      const response = await fetch('/api/pick-tool', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,24 +35,27 @@ export default function SimpleChatInput() {
       }
 
       const data = await response.json();
-      
-      const assistantMessage = { 
-        role: 'assistant', 
-        content: data.content 
-      };
-      
-      // Update messages in memory (hidden from UI)
-      setMessages([...updatedMessages, assistantMessage]);
-      
-      // Auto-render largest code block
-      autoRenderLargestBlock(data.content);
+      if (!data.success) throw new Error('Failed to pick tool');
+
+      // Update full message history from server (keeps tool-call context)
+      if (Array.isArray(data.messages)) {
+        setMessages(data.messages);
+      }
+
+      // Multi-tool support
+      if (Array.isArray(data.selections) && data.selections.length) {
+        for (const sel of data.selections) {
+          if (sel?.tool) addToolByType(sel.tool, sel.props || {});
+        }
+      } else {
+        // Back-compat for single selection shape
+        const { tool, props } = data.selection || {};
+        if (tool) addToolByType(tool, props);
+      }
       
     } catch (error) {
       console.error('Chat error:', error);
-      setMessages([...updatedMessages, { 
-        role: 'assistant', 
-        content: 'Sorry, I encountered an error. Please try again.' 
-      }]);
+      setMessages([...updatedMessages, { role: 'assistant', content: 'Sorry, I could not select a tool. Please try again.' }]);
     } finally {
       setIsLoading(false);
     }

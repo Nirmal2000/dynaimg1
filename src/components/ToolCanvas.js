@@ -1,9 +1,10 @@
 'use client';
 
 import { useToolContext } from '../contexts/ToolContext';
+import { getToolDefinition } from '../tools/ToolRegistry';
 
 export default function ToolCanvas() {
-  const { renderedTools, removeTool } = useToolContext();
+  const { renderedTools } = useToolContext();
 
   if (renderedTools.length === 0) {
     return (
@@ -23,18 +24,18 @@ export default function ToolCanvas() {
   }
 
   return (
-    <div className="w-full h-full overflow-y-auto scrollbar-hide">
+    <div id="tool-canvas-root" className="w-full h-full overflow-y-auto overflow-x-hidden scrollbar-hide relative">
       <div className="space-y-[1.25vw]">
-        {renderedTools.map((tool) => (
-          <div key={tool.id} className="relative">
-            
-            {/* Render tool HTML directly */}
-            <div 
-              dangerouslySetInnerHTML={{ __html: tool.processedHtml }}
-              className="w-full overflow-hidden"
-            />
-          </div>
-        ))}
+        {renderedTools.map((tool) => {
+          const def = getToolDefinition(tool.type);
+          if (!def) return null;
+          const Component = def.component;
+          return (
+            <div key={tool.id} className="relative tool-enter">
+              <Component id={tool.id} {...tool.props} />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

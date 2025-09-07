@@ -27,6 +27,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>        
         <script src="https://unpkg.com/lucide@latest"></script>
+        <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${manrope.variable} antialiased`}

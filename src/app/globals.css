@@ -120,11 +120,26 @@ html, body {
   cursor: pointer;
   box-sizing: border-box;
   border: none;
-  box-shadow: none;
+  background: rgba(61, 61, 61, 0.01);
+  transition: background-color 0.2s ease, transform 0.12s ease;
 }
 
 .dynaimg-filter-button.active {
   border: none;
+}
+
+/* Interactive states for tiles (filters/rotate) */
+.dynaimg-filter-button:hover {
+  background: rgba(66, 66, 66, 0.4);
+}
+
+.dynaimg-filter-button:active {
+  transform: scale(0.95);
+}
+
+.dynaimg-filter-button:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 3px var(--border-active);
 }
 
 /* Section Header */
@@ -172,4 +187,26 @@ html, body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Fade-in animation for newly added tools */
+.tool-enter {
+  opacity: 0;
+  transform: translateY(6px);
+  animation: toolFadeIn 220ms ease-out forwards;
+}
+
+@keyframes toolFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tool-enter {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
 }

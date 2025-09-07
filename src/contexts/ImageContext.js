@@ -15,6 +15,7 @@ export const useImageContext = () => {
 export const ImageProvider = ({ children }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [imageVersion, setImageVersion] = useState(0);
   const canvasRef = useRef(null);
   const currentImageRef = useRef(null);
   const originalImageDataRef = useRef(null);
@@ -32,6 +33,7 @@ export const ImageProvider = ({ children }) => {
       if (!canvasRef.current) return;
       const ctx = canvasRef.current.getContext('2d', { willReadFrequently: true });
       ctx.putImageData(imageData, 0, 0);
+      setImageVersion((v) => v + 1);
     },
     toDataURL: () => {
       if (!canvasRef.current) return 'data:,';
@@ -41,6 +43,7 @@ export const ImageProvider = ({ children }) => {
       if (!canvasRef.current || !originalImageDataRef.current) return;
       const ctx = canvasRef.current.getContext('2d', { willReadFrequently: true });
       ctx.putImageData(originalImageDataRef.current, 0, 0);
+      setImageVersion((v) => v + 1);
     }
   }).current;
 
@@ -62,6 +65,7 @@ export const ImageProvider = ({ children }) => {
       // Update stable canvas editor references
       canvasEditor.canvas = canvas;
       canvasEditor.ctx = ctx;
+      setImageVersion((v) => v + 1);
     };
     
     img.src = imageSrc;
@@ -91,6 +95,7 @@ export const ImageProvider = ({ children }) => {
       currentImageRef.current = img;
       canvasEditor.canvas = canvas;
       canvasEditor.ctx = ctx;
+      setImageVersion((v) => v + 1);
     };
     img.src = newImageDataUrl;
   }, [canvasEditor]);
@@ -110,6 +115,7 @@ export const ImageProvider = ({ children }) => {
     
     // Stable canvas editor that tools can use
     canvasEditor,
+    imageVersion,
     
     // Helper methods
     getCurrentImageDataUrl: () => canvasEditor.toDataURL(),

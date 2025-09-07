@@ -30,8 +30,8 @@ export default function TextAreaPanel({ onEditImage, onDownload }) {
       setIsProcessing(true);
       setStatus('');
 
-      // Call Fal AI API
-      const response = await fetch('/api/fal-edit-image', {
+      // Call Google Image Edit API
+      const response = await fetch('/api/google-edit-image', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
