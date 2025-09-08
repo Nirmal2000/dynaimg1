@@ -50,7 +50,7 @@ export default function RotateTool() {
   const iconClass = 'w-6 h-6 transition-colors';
 
   return (
-    <div className="w-full rounded-2xl border border-[#515050] p-4">
+    <div className="dynaimg-tool-section">
       <div className="dynaimg-section-spacing">
         <div className="dynaimg-section-header">Rotate</div>
         <div className="flex gap-[1.25vw]">

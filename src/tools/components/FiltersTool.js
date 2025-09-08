@@ -7,7 +7,7 @@ import { RefreshCcw } from 'lucide-react';
 function clamp255(v) { return Math.max(0, Math.min(255, v)); }
 
 export default function FiltersTool({ id, preset }) {
-  const { canvasEditor, getCurrentImageDataUrl } = useImageContext();
+  const { canvasEditor, getCurrentImageDataUrl, imageVersion } = useImageContext();
   const originalRef = useRef(null); // baseline when tool mounted
   const [active, setActive] = useState(preset || null); // 'grayscale' | 'negative' | 'sepia' | null
   const [thumb, setThumb] = useState('');
@@ -24,6 +24,16 @@ export default function FiltersTool({ id, preset }) {
     // We intentionally only capture on initial mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // React to any external canvas changes (e.g., Google edit tool or other tools)
+  useEffect(() => {
+    try {
+      const url = getCurrentImageDataUrl?.();
+      if (url) setThumb(url);
+      const imgData = canvasEditor?.getImageData?.();
+      if (imgData) originalRef.current = imgData; // rebase to latest image
+    } catch {}
+  }, [imageVersion, canvasEditor, getCurrentImageDataUrl]);
 
   const ensureOriginal = useCallback(() => {
     if (!canvasEditor?.canvas) return null;
@@ -77,7 +87,7 @@ export default function FiltersTool({ id, preset }) {
   };
 
   return (
-    <div className="w-full rounded-2xl border border-[#515050] p-4">
+    <div className="dynaimg-tool-section">
       <div className="dynaimg-section-spacing">
         <div className="dynaimg-section-header">Filters</div>
         <div className="flex gap-[1.25vw]">

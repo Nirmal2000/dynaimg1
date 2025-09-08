@@ -7,9 +7,10 @@ import ToolCanvas from '../components/ToolCanvas';
 import SimpleChatInput from '../components/SimpleChatInput';
 import { ToolProvider } from '../contexts/ToolContext';
 import { ImageProvider, useImageContext } from '../contexts/ImageContext';
+import { RefreshCcw } from 'lucide-react';
 
 function HomeContent() {
-  const { setSelectedImage, isProcessing } = useImageContext();
+  const { setSelectedImage, isProcessing, resetToOriginal } = useImageContext();
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
   const [editImageFunction, setEditImageFunction] = useState(null);
@@ -126,12 +127,33 @@ function HomeContent() {
         <div className="flex-1 flex flex-col min-h-0">
           {/* ToolBox Header */}
           <div className="mb-[1.25vw] flex-shrink-0">
-            <h2
-              className="text-[#aeaeae] text-lg font-medium mb-[0.625vw]"
-              style={{ fontFamily: "var(--font-manrope), sans-serif" }}
-            >
-              ToolBox
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2
+                className="text-[#aeaeae] text-lg font-medium mb-[0.625vw]"
+                style={{ fontFamily: "var(--font-manrope), sans-serif" }}
+              >
+                ToolBox
+              </h2>
+              <button
+                type="button"
+                onClick={() => resetToOriginal?.()}
+                className="dynaimg-filter-button group transition-all duration-200 hover:bg-[rgba(66,66,66,0.4)] active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--border-active)] focus:ring-offset-0"
+                style={{
+                  width: 44,
+                  height: 44,
+                  border: '6px solid var(--border-default)',
+                  borderRadius: 14,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(61,61,61,0.01)'
+                }}
+                aria-label="Reset to original image"
+                title="Reset image"
+              >
+                <RefreshCcw className="w-5 h-5 text-[var(--foreground)] group-hover:text-white" />
+              </button>
+            </div>
             <div className="w-full h-px bg-[#515050] mb-[0.625vw] mt-[33px]"></div>
           </div>
 

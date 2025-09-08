@@ -99,7 +99,7 @@ export default function HistogramTool() {
   }, [canvasEditor, imageVersion, bins]);
 
   return (
-    <div className="w-full rounded-2xl border border-[#515050] p-4">
+    <div className="dynaimg-tool-section">
       <div className="dynaimg-section-spacing">
         <div className="dynaimg-section-header">Histogram</div>
         <div ref={plotRef} className="w-full" style={{ height: 220 }} />
@@ -107,4 +107,3 @@ export default function HistogramTool() {
     </div>
   );
 }
-

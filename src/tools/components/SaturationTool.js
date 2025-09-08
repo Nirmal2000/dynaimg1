@@ -93,7 +93,7 @@ export default function SaturationTool({ id, initialSaturation = 0 }) {
   const valueLabel = `${saturation > 0 ? '+' : ''}${saturation}%`;
 
   return (
-    <div className="w-full rounded-2xl border border-[#515050] p-4">
+    <div className="dynaimg-tool-section">
       <div className="dynaimg-section-spacing">
         <div className="dynaimg-slider-container">
           <span className="dynaimg-text">Saturation</span>

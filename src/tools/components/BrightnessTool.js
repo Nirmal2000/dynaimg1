@@ -56,7 +56,7 @@ export default function BrightnessTool({ id, initialBrightness = 0 }) {
   const valueLabel = `${brightness > 0 ? '+' : ''}${brightness}%`;
 
   return (
-    <div className="w-full rounded-2xl border border-[#515050] p-4">
+    <div className="dynaimg-tool-section">
       <div className="dynaimg-section-spacing">
         <div className="dynaimg-slider-container">
           <span className="dynaimg-text">Brightness</span>
