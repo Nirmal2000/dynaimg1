@@ -3,7 +3,7 @@
 ## Table of Contents
 - [Core Innovation: Conversational UI Synthesis](#core-innovation-conversational-ui-synthesis)
 - [System Prompt Architecture](#system-prompt-architecture)
-- [Cerebras LLM Integration](#cerebras-llm-integration)
+- [OpenRouter LLM Integration](#openrouter-llm-integration)
 - [HTML/CSS/JS Processing Pipeline](#htmlcssjs-processing-pipeline)
 - [Tool Execution and Security](#tool-execution-and-security)
 - [Canvas Integration Patterns](#canvas-integration-patterns)
@@ -75,23 +75,30 @@ const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 - **Consistency enforcement** - Every generation follows identical patterns
 - **Quality assurance** - Built-in testing and validation feedback
 
-## Cerebras LLM Integration
+## OpenRouter LLM Integration
 
 ### Model Selection and Configuration
 
-**Why qwen-3-coder-480b:**
+**Why google/gemini-2.5-flash via OpenRouter:**
 ```javascript
-const llm = new ChatCerebras({
-  model: "qwen-3-coder-480b", // Specialized for code generation
-  temperature: 0, // Deterministic output for reliability
-});
+const llm = new ChatOpenAI(
+  {
+    model: 'google/gemini-2.5-flash', // Advanced multimodal model
+    temperature: 0.8, // Creative output for UI design
+    streaming: true, // Enable real-time responses
+    apiKey: process.env.OPENROUTER_API_KEY,
+  },
+  {
+    baseURL: "https://openrouter.ai/api/v1",
+  }
+);
 ```
 
 **Key Selection Criteria:**
-- **Code Generation Specialization**: Optimized for HTML/CSS/JS output
-- **Consistency**: Low temperature ensures predictable patterns
-- **Performance**: Fast inference for real-time user interactions
-- **Quality**: Maintains complex design system adherence
+- **Multimodal Capabilities**: Can process both text and images for UI generation
+- **Creativity**: Higher temperature enables innovative UI design solutions
+- **Streaming Support**: Real-time streaming responses for better user experience
+- **Accessibility**: OpenRouter provides access to multiple high-quality models
 
 ### API Integration Pipeline
 

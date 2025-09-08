@@ -2,7 +2,7 @@
 
 ## Table of Contents
 - [API Architecture Overview](#api-architecture-overview)
-- [Cerebras LLM Integration](#cerebras-llm-integration)
+- [OpenAI via OpenRouter Integration](#openai-via-openrouter-integration)
 - [Fal AI Integration](#fal-ai-integration)
 - [Request/Response Patterns](#requestresponse-patterns)
 - [Error Handling and Recovery](#error-handling-and-recovery)
@@ -15,8 +15,8 @@
 
 **DynaImg** integrates two specialized AI services:
 
-**Cerebras API (Tool Generation)**
-- **Provider**: `qwen-3-coder-480b` model
+**OpenRouter API (Tool Generation)**
+- **Provider**: `google/gemini-2.5-flash` model via OpenRouter
 - **Purpose**: Conversational code generation
 - **Use Case**: Transforming natural language to UI components
 - **Integration**: LangChain framework with Next.js API routes
@@ -31,10 +31,10 @@
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   User Request  │    │   Cerebras      │    │   ToolCanvas    │
-│                 │ ── │   LLM API       │ ── │   Renders       │
-│ Generate Tool   │    │   Generates     │    │   Component     │
-│                 │    │   HTML/CSS/JS   │    │                 │
+│   User Request  │    │   OpenRouter     │    │   ToolCanvas    │
+│                 │ ── │   LLM API        │ ── │   Renders       │
+│ Generate Tool   │    │   Generates      │    │   Component     │
+│                 │    │   HTML/CSS/JS    │    │                 │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                                     │
                                     ∨
@@ -52,34 +52,39 @@
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-## Cerebras LLM Integration
+## OpenAI via OpenRouter Integration
 
 ### Model Configuration and Setup
 
 **LangChain-Next.js Integration:**
 ```javascript
 // src/app/api/generate-tool/route.js
-import { ChatCerebras } from '@langchain/cerebras';
+import { ChatOpenAI } from "@langchain/openai";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
 // Model initialization
-const llm = new ChatCerebras({
-  model: process.env.MODEL_NAME || "qwen-3-coder-480b",
-  temperature: 0, // Deterministic output for UI consistency
-  // Additional configuration options
-  maxTokens: 4000, // Allow sufficient code generation
-  streaming: false, // Batch processing for reliability
-});
+const llm = new ChatOpenAI(
+  {
+    model: 'google/gemini-2.5-flash',
+    temperature: 0.8, // Creative output for UI generation
+    streaming: true, // Enable streaming for responsiveness
+    apiKey: process.env.OPENROUTER_API_KEY,
+  },
+  {
+    baseURL: "https://openrouter.ai/api/v1",
+  }
+);
 ```
 
 **Environment Configuration:**
 ```bash
 # Required environment variables
-MODEL_NAME="qwen-3-coder-480b"
-CEREBRAS_API_KEY="your-api-key-here"
+OPENROUTER_API_KEY="your-openrouter-api-key-here"
 
 # Optional configurations
-TEMPERATURE=0
-MAX_TOKENS=4000
+MODEL_NAME="google/gemini-2.5-flash"
+TEMPERATURE=0.8
+STREAMING=true
 ```
 
 ### System Prompt Architecture
@@ -145,7 +150,7 @@ export async function POST(request) {
     ];
 
     // Invoke LLM with context
-    console.log('Invoking Cerebras LLM with', langchainMessages.length, 'messages');
+    console.log('Invoking OpenRouter LLM with', langchainMessages.length, 'messages');
     const response = await llm.invoke(langchainMessages);
 
     // Return processed response
@@ -156,8 +161,8 @@ export async function POST(request) {
     });
 
   } catch (error) {
-    console.error('Cerebras API error:', error);
-    return handleCerebrasError(error);
+    console.error('OpenRouter API error:', error);
+    return handleOpenRouterError(error);
   }
 }
 ```
@@ -389,7 +394,7 @@ const handleCompleted = async (requestId) => {
   "data": { /* domain-specific response */ },
   "metadata": {
     "timestamp": "2025-01-01T12:00:00.000Z",
-    "model": "qwen-3-coder-480b",
+    "model": "google/gemini-2.5-flash",
     "tokensUsed": 2340,
     "processingTime": 1.2
   },

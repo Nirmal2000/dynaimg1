@@ -1,12 +1,20 @@
-import { ChatCerebras } from '@langchain/cerebras';
+import { ChatOpenAI } from "@langchain/openai";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { NextResponse } from 'next/server';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const llm = new ChatCerebras({
-  model: process.env.MODEL_NAME || "qwen-3-coder-480b",
-  temperature: 0,
-});
+const llm = new ChatOpenAI(
+  {
+    model: 'google/gemini-2.5-flash',
+    temperature: 0.8,
+    streaming: true,
+    apiKey: process.env.OPENROUTER_API_KEY,
+  },
+  {
+    baseURL: "https://openrouter.ai/api/v1",
+  }
+);
 
 // Load the system prompt from file
 const getSystemPrompt = () => {
