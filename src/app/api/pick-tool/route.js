@@ -126,6 +126,7 @@ export async function POST(request) {
       rounds += 1;
 
       const aiMessage = await callOpenRouter(updated, toolsSchema);
+      console.log('AI message:', aiMessage);
       if (!aiMessage || !aiMessage.role) break;
 
       updated.push(aiMessage);
@@ -135,7 +136,8 @@ export async function POST(request) {
       }
 
       for (const toolCall of aiMessage.tool_calls) {
-        if (toolCall.name !== 'pick_tool') continue;
+        console.log(JSON.stringify(toolCall, null, 2));
+        if (toolCall.function.name !== 'pick_tool') continue;
 
         try {
           const args = JSON.parse(toolCall.function.arguments);
@@ -159,6 +161,7 @@ export async function POST(request) {
       }
 
       // Loop back to allow the model to add more tool calls if needed
+      break
     }
 
     const serialized = serializeMessagesForClient(updated);
